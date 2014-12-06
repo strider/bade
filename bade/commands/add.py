@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 
 from .. import utils
 from . import init
@@ -14,7 +15,11 @@ def command(config, repo, commit, upstream, commit_hash):
 
     # update Puppetfile
     branch = utils.get_current_branch(repo)
-    basename = os.path.basename(upstream).split('-', 1)[1].split('.', 1)[0]
+
+    # Some puppet modules could have an underscore instead of a dash in their
+    # name. !
+    basename = re.split('puppet-|puppet_',
+                        os.path.basename(upstream))[-1].split('.', 1)[0]
     _locals = locals()
     utils.shout(
         'Adding new module module {basename}'.format(**_locals),
